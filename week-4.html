@@ -1,0 +1,148 @@
+<head>
+<style type='text/css'>
+/*<![CDATA[*/
+    html { }
+    body {
+      background-color: white;
+      width: 35em;
+      margin: 0 auto;
+      padding: 50px 20px 0px 20px;
+      font-family: 'Helvetica Neue', sans-serif;
+      letter-spacing: 0.1em;
+      font-size: 14px;
+      color: #000;
+      line-height: 1.5em; }
+    h1, h2, h3, h4, h5, h6, h7 {
+      font-family: "Helvetica Neue";
+      text-transform: uppercase;
+      color: #666;
+      font-size: 18px;
+      letter-spacing: 0.05em;
+      font-weight: 500;
+      line-height: 1em;
+      margin-bottom: 0;
+      margin-top: 2em }
+    h1 {
+      font-size: 38px;
+      letter-spacing: 0.2em;
+      line-height: 1em;
+      margin-top: 3em;
+      margin-bottom: 1em }
+    h2 {
+      font-size: 22px;
+      line-height: 1em;
+      margin-top: 3em;
+      margin-bottom: 1em;
+    }
+    .timestamp {
+      margin-top: 6em;
+      text-align: right;
+      color: #999;
+      border-top: 1px solid #CCC;
+      font-size: 10px }
+    .timestamp, .timestamp a:link, .timestamp a:visited {
+      color: #888; }
+    .timestamp a {
+      text-decoration: underline; }
+    blockquote {
+      border-left: 5px solid #DDD;
+      margin-left: 0;
+      padding-left: 2em;
+      color: #888;
+    }
+    code {
+      padding: 0px 2px; }
+    pre {
+      margin: 0;
+    }
+    .codehilite {
+      overflow: auto;
+      padding: 7px 20px;
+      }
+    code, .codehilite {
+      background-color: #F9F9FF;
+      border: 2px solid #EEF;
+      color: #777;
+      font-size: 12px;
+      line-height: 1.5em; }
+
+    @media screen and (max-width: 650px) {
+      body {
+        width: auto;
+        margin: 0; } }
+
+    @media screen and (max-width: 550px) {
+      body {
+        padding-left: 20px;
+        padding-right: 20px } }
+
+/*]]>*/
+</style>
+</head>
+<body>
+  
+  <!--
+.. title: week 4
+.. slug: week-4
+.. date: 2014/06/18 11:29:01
+.. tags: sympy, GSoC
+.. link:
+.. description:
+.. type: text
+-->
+
+<h2>Intersections of Infinitely indexed sets</h2>
+<p>This week I implemented a method to do intersection of imagesets using the
+solutions of Diophantine equations at <a href="https://github.com/sympy/sympy/pull/7587">PR</a>.</p>
+<p>Say you have
+to find the intersection of sets <code>2*n| n in Integers</code> and <code>3*m| m in Integers</code>.
+The intersection of these sets is the set of the common values in the two sets,
+which in this case is equivalent to the values of <code>n</code> for which the equation <code>2*n - 3*m</code> has
+some integral solution in <code>m</code>. Or the values of <code>m</code> for which the <code>2*n - 3*m</code>
+has some integral solution in <code>n</code>. Diophantine equations are equations for
+which only integral solutions are searched for.
+The Diophantine module was written by
+<a href="https://github.com/thilinarmtb">Thilina</a> as his GSoC project last year.
+It gives the parametric solution for such equation.</p>
+<div class="codehilite"><pre>In [17]: diophantine(2*n - 3*m)
+Out[17]: {(-2*t, -3*t)}
+</pre></div>
+
+
+<p>The Solution is sorted according to alphabetic order of the variables involved.
+So the value of LHS (<code>2*n</code>) for which the equation is <code>2*(-3*t)</code> that is <code>-6*t</code>
+and it is the intersection of the sets described above <code>-6*t| t in Integers</code>.
+Since <code>-6*t| t in Integers</code> is same as <code>6*t| t in Integers</code> I also wrote some
+simplification rules for the imagesets with Integers as baseset.</p>
+<h2>Sets for Invert Function</h2>
+<p>The sets module turned out to be better than I expected. I had a perception
+that substitutions doesn't work properly with sets and I have even opened an
+<a href="https://github.com/sympy/sympy/issues/7483">issue</a> for that but it turned out
+I hadn't looked closely enough. It worked well for the free variables and it
+didn't worked for the things it shouldn't work i.e., the bound variables in the
+imagesets.</p>
+<p>Using sets simplified the code. All the list comprehensions like this
+<code>[i.subs(symbol, symbol/g) for i in _invert(h, symbol)]</code> were converted to
+simple substitutions for sets and other sets operations.  <code>_invert(h,
+symbol).subs(symbol, symbol/g)</code></p>
+<p>Just by changing the output of invert to sets, then by adding the inverse of
+trigonometric function and writing the code to rewrite then as tan I was able
+to return all the solutions of the equations like <code>cos(x) + sin(x) == 0</code> it
+turned to out to easier than I thought. Using sets as output makes thinking
+about the mathematics of the solvers much more easier and the code comes
+out to be pretty natural. Now when we can see the results I can surely say
+there can be no better output for solvers than sets.</p>
+<p>This week I'll study LambertW function and then code additional techniques to
+solve real equations. I'll also try to figure out techniques to perform Union
+on infinitely indexed sets.</p>
+
+  <div class='timestamp'>
+    generated by
+    <a href='http://github.com/boscoh/embellish'>embellish</a>
+    
+    on 22 Apr 2015
+
+
+
+  </div>
+</body>
